@@ -130,6 +130,7 @@
         let score = 0;
         let selectedTerm = null;
 
+        // 随机打乱数组
         function shuffle(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -137,58 +138,61 @@
             }
         }
 
+        // 加载游戏
         function loadGame() {
             const termsDiv = document.querySelector('.terms');
             const definitionsDiv = document.querySelector('.definitions');
             
-            // Shuffle terms and definitions independently
-            const termIndices = [...data.keys()];
-            const defIndices = [...data.keys()];
-            shuffle(termIndices);
-            shuffle(defIndices);
+            // 打乱术语和定义的顺序
+            const shuffledTerms = [...data];
+            const shuffledDefinitions = [...data];
+            shuffle(shuffledTerms);
+            shuffle(shuffledDefinitions);
 
+            // 加载术语
             termsDiv.innerHTML = '<h2>Terms</h2>';
-            defIndices.forEach(originalIndex => {
-                const term = data[originalIndex].term;
+            shuffledTerms.forEach((item, index) => {
                 termsDiv.innerHTML += `
                     <div class="item" 
-                        data-id="${originalIndex + 1}" 
+                        data-id="${index + 1}" 
                         tabindex="0"
-                        aria-label="Term: ${term}"
+                        aria-label="Term: ${item.term}"
                         onclick="handleTermClick(this)">
-                        ${term}
+                        ${item.term}
                     </div>
                 `;
             });
 
+            // 加载定义
             definitionsDiv.innerHTML = '<h2>Definitions</h2>';
-            defIndices.forEach(originalIndex => {
-                const definition = data[originalIndex].definition;
+            shuffledDefinitions.forEach((item, index) => {
                 definitionsDiv.innerHTML += `
                     <div class="item" 
-                        data-match="${originalIndex + 1}"
+                        data-match="${index + 1}"
                         tabindex="0"
-                        aria-label="Definition: ${definition}"
+                        aria-label="Definition: ${item.definition}"
                         onclick="handleDefClick(this)">
-                        ${definition}
+                        ${item.definition}
                     </div>
                 `;
             });
         }
 
+        // 处理术语点击
         function handleTermClick(term) {
             if (selectedTerm) selectedTerm.classList.remove('selected');
             selectedTerm = term;
             term.classList.add('selected');
         }
 
+        // 处理定义点击
         function handleDefClick(def) {
             if (!selectedTerm) return;
             
             const termId = selectedTerm.dataset.id;
             const defMatch = def.dataset.match;
 
-            // Remove existing matches
+            // 移除已有的匹配
             matches.delete(termId);
             matches.forEach((value, key) => {
                 if (value === defMatch) matches.delete(key);
@@ -200,6 +204,7 @@
             selectedTerm = null;
         }
 
+        // 更新匹配显示
         function updateMatches() {
             const matchesDiv = document.getElementById('matches');
             matchesDiv.innerHTML = '';
@@ -217,6 +222,7 @@
             });
         }
 
+        // 检查答案
         function checkAnswers() {
             score = 0;
             document.querySelectorAll('.item').forEach(item => {
@@ -241,6 +247,7 @@
             if (score === data.length) alert("Perfect! All matches correct!");
         }
 
+        // 重置游戏
         function resetGame() {
             matches.clear();
             document.getElementById('matches').innerHTML = '';
@@ -252,7 +259,7 @@
             loadGame();
         }
 
-        // Initialize game
+        // 初始化游戏
         loadGame();
     </script>
 </body>
