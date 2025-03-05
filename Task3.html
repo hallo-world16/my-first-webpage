@@ -138,6 +138,18 @@
             }
         }
 
+        // 确保术语和定义不在同一行
+        function ensureNoSameRowMatch(terms, definitions) {
+            for (let i = 0; i < terms.length; i++) {
+                if (terms[i].term === definitions[i].definition) {
+                    // 如果同一行的术语和定义匹配，则交换定义的位置
+                    const temp = definitions[i];
+                    definitions[i] = definitions[(i + 1) % definitions.length];
+                    definitions[(i + 1) % definitions.length] = temp;
+                }
+            }
+        }
+
         // 加载游戏
         function loadGame() {
             const termsDiv = document.querySelector('.terms');
@@ -148,6 +160,9 @@
             const shuffledDefinitions = [...data];
             shuffle(shuffledTerms);
             shuffle(shuffledDefinitions);
+
+            // 确保同一行的术语和定义不匹配
+            ensureNoSameRowMatch(shuffledTerms, shuffledDefinitions);
 
             // 加载术语
             termsDiv.innerHTML = '<h2>Terms</h2>';
