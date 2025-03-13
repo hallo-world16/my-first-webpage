@@ -100,11 +100,19 @@
                 flex-direction: column;
             }
         }
+
+        .timer {
+            text-align: center;
+            font-size: 1.5em;
+            margin: 10px 0;
+            color: #dc3545;
+        }
     </style>
 </head>
 <body>
     <h1>国家安全匹配游戏</h1>
     <div class="score">得分: <span id="score">0</span> / 5</div>
+    <div class="timer">剩余时间: <span id="time">01:00</span></div>
     <div class="container">
         <div class="terms">
             <h2>术语</h2>
@@ -129,6 +137,8 @@
         let matches = new Map();
         let score = 0;
         let selectedTerm = null;
+        let timeLeft = 60; // 倒计时时间（秒）
+        let timerInterval = null;
 
         // 随机打乱数组
         function shuffle(array) {
@@ -264,6 +274,9 @@
 
         // 重置游戏
         function resetGame() {
+            clearInterval(timerInterval); // 清除倒计时
+            timeLeft = 60; // 重置时间
+            document.getElementById('time').textContent = "01:00"; // 重置显示时间
             matches.clear();
             document.getElementById('matches').innerHTML = '';
             document.querySelectorAll('.item').forEach(item => {
@@ -272,10 +285,28 @@
             score = 0;
             document.getElementById('score').textContent = score;
             loadGame();
+            startTimer(); // 重新开始倒计时
+        }
+
+        // 开始倒计时
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById('time').textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    alert("时间到！游戏结束！");
+                    checkAnswers(); // 时间到后自动检查答案
+                }
+            }, 1000);
         }
 
         // 初始化游戏
         loadGame();
+        startTimer(); // 启动倒计时
     </script>
 </body>
 </html>
