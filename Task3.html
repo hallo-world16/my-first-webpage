@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matching Game</title>
+    <title>国家安全匹配游戏</title>
     <style>
         :root {
             --correct-color: #d4edda;
@@ -103,27 +103,27 @@
     </style>
 </head>
 <body>
-    <h1>Match the Terms with their Definitions</h1>
-    <div class="score">Score: <span id="score">0</span> / 5</div>
+    <h1>国家安全匹配游戏</h1>
+    <div class="score">得分: <span id="score">0</span> / 5</div>
     <div class="container">
         <div class="terms">
-            <h2>Terms</h2>
+            <h2>术语</h2>
         </div>
         <div class="definitions">
-            <h2>Definitions</h2>
+            <h2>定义</h2>
         </div>
     </div>
-    <button onclick="checkAnswers()">Check Answers</button>
-    <button onclick="resetGame()">Reset</button>
+    <button onclick="checkAnswers()">检查答案</button>
+    <button onclick="resetGame()">重置</button>
     <div class="matches" id="matches"></div>
 
     <script>
         const data = [
-            { term: "Photosynthesis", definition: "Process where plants convert sunlight into energy" },
-            { term: "Mitochondria", definition: "Powerhouse of the cell" },
-            { term: "DNA", definition: "Carries genetic information in living things" },
-            { term: "Cell Membrane", definition: "Barrier that controls what enters and exits the cell" },
-            { term: "Nucleus", definition: "Control center of the cell containing genetic material" }
+            { term: "军事安全", definition: "军事是国家安全的基础保障。通过设立常备军队，国家具备威慑和抵抗外来军事势力入侵的能力，并能在第一时间进行反击。" },
+            { term: "政治安全", definition: "通常指稳定的社会秩序以及政府与人民之间的契约（如法律）不会因政党轮替或领导人更换而被轻易推翻。" },
+            { term: "经济安全", definition: "对内，维持国家内部各经济部门和元素的正常运转，保障公平有序的交易和投资环境；对外，通过两国之间的投资保障协定，确保国际经济合作的安全与稳定。" },
+            { term: "资源安全", definition: "为了国家的永续发展，国家应以公共储备的角色介入各类能源、粮食、矿产、水资源等的安全存量管理与物价调节。" },
+            { term: "文化安全", definition: "文化安全指一个文化处于没有危险和不受内外威胁的状态，以及保障持续安全状态的能力。" }
         ];
 
         let matches = new Map();
@@ -141,7 +141,7 @@
         // 确保术语和定义不在同一行
         function ensureNoSameRowMatch(terms, definitions) {
             for (let i = 0; i < terms.length; i++) {
-                if (terms[i].term === definitions[i].definition) {
+                if (terms[i].term === definitions[i].term) {
                     // 如果同一行的术语和定义匹配，则交换定义的位置
                     const temp = definitions[i];
                     definitions[i] = definitions[(i + 1) % definitions.length];
@@ -165,13 +165,13 @@
             ensureNoSameRowMatch(shuffledTerms, shuffledDefinitions);
 
             // 加载术语
-            termsDiv.innerHTML = '<h2>Terms</h2>';
+            termsDiv.innerHTML = '<h2>术语</h2>';
             shuffledTerms.forEach((item, index) => {
                 termsDiv.innerHTML += `
                     <div class="item" 
                         data-id="${index + 1}" 
                         tabindex="0"
-                        aria-label="Term: ${item.term}"
+                        aria-label="术语: ${item.term}"
                         onclick="handleTermClick(this)">
                         ${item.term}
                     </div>
@@ -179,13 +179,13 @@
             });
 
             // 加载定义
-            definitionsDiv.innerHTML = '<h2>Definitions</h2>';
+            definitionsDiv.innerHTML = '<h2>定义</h2>';
             shuffledDefinitions.forEach((item, index) => {
                 definitionsDiv.innerHTML += `
                     <div class="item" 
                         data-match="${index + 1}"
                         tabindex="0"
-                        aria-label="Definition: ${item.definition}"
+                        aria-label="定义: ${item.definition}"
                         onclick="handleDefClick(this)">
                         ${item.definition}
                     </div>
@@ -259,7 +259,7 @@
             });
 
             document.getElementById('score').textContent = score;
-            if (score === data.length) alert("Perfect! All matches correct!");
+            if (score === data.length) alert("恭喜！所有匹配都正确！");
         }
 
         // 重置游戏
