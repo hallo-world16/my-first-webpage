@@ -11,6 +11,7 @@
             --primary-color: #007bff;
             --hover-color: #0056b3;
             --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            --selected-color: #007bff; /* 选中时的蓝色 */
         }
 
         body {
@@ -44,7 +45,8 @@
         }
 
         .item.selected {
-            border: 2px solid var(--primary-color);
+            border: 2px solid var(--selected-color); /* 选中时变为蓝色 */
+            background-color: #e6f0ff; /* 浅蓝色背景 */
         }
 
         .item.correct {
@@ -55,6 +57,10 @@
         .item.incorrect {
             background: var(--incorrect-color);
             border: 2px solid #dc3545;
+        }
+
+        .item.hidden {
+            display: none; /* 匹配正确后隐藏 */
         }
 
         .score {
@@ -227,6 +233,22 @@
             updateMatches();
             selectedTerm.classList.remove('selected');
             selectedTerm = null;
+
+            // 检查是否匹配正确
+            checkMatch(termId, defMatch);
+        }
+
+        // 检查匹配是否正确
+        function checkMatch(termId, defMatch) {
+            if (termId === defMatch) {
+                // 匹配正确，隐藏术语和定义
+                const term = document.querySelector(`.terms .item[data-id="${termId}"]`);
+                const def = document.querySelector(`.definitions .item[data-match="${defMatch}"]`);
+                term.classList.add('hidden');
+                def.classList.add('hidden');
+                score++;
+                document.getElementById('score').textContent = score;
+            }
         }
 
         // 更新匹配显示
@@ -249,7 +271,6 @@
 
         // 检查答案
         function checkAnswers() {
-            score = 0;
             document.querySelectorAll('.item').forEach(item => {
                 item.classList.remove('correct', 'incorrect');
             });
@@ -261,14 +282,12 @@
                 if (termId === defId) {
                     term.classList.add('correct');
                     def.classList.add('correct');
-                    score++;
                 } else {
                     term.classList.add('incorrect');
                     def.classList.add('incorrect');
                 }
             });
 
-            document.getElementById('score').textContent = score;
             if (score === data.length) alert("恭喜！所有匹配都正确！");
         }
 
@@ -280,7 +299,7 @@
             matches.clear();
             document.getElementById('matches').innerHTML = '';
             document.querySelectorAll('.item').forEach(item => {
-                item.classList.remove('correct', 'incorrect', 'selected');
+                item.classList.remove('correct', 'incorrect', 'selected', 'hidden');
             });
             score = 0;
             document.getElementById('score').textContent = score;
