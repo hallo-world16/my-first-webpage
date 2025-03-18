@@ -113,6 +113,14 @@
             margin: 10px 0;
             color: #dc3545;
         }
+
+        .congratulations {
+            text-align: center;
+            font-size: 2em;
+            color: #28a745;
+            margin-top: 20px;
+            display: none; /* 初始隐藏 */
+        }
     </style>
 </head>
 <body>
@@ -127,8 +135,8 @@
             <h2>定义</h2>
         </div>
     </div>
-    <button onclick="checkAnswers()">检查答案</button>
     <button onclick="resetGame()">重置</button>
+    <div class="congratulations" id="congratulations">恭喜！通关成功！</div>
     <div class="matches" id="matches"></div>
 
     <script>
@@ -248,6 +256,12 @@
                 def.classList.add('hidden');
                 score++;
                 document.getElementById('score').textContent = score;
+
+                // 检查是否所有选项都已匹配
+                if (score === data.length) {
+                    document.getElementById('congratulations').style.display = 'block'; // 显示通关提示
+                    clearInterval(timerInterval); // 停止倒计时
+                }
             }
         }
 
@@ -269,28 +283,6 @@
             });
         }
 
-        // 检查答案
-        function checkAnswers() {
-            document.querySelectorAll('.item').forEach(item => {
-                item.classList.remove('correct', 'incorrect');
-            });
-
-            matches.forEach((defId, termId) => {
-                const term = document.querySelector(`.terms .item[data-id="${termId}"]`);
-                const def = document.querySelector(`.definitions .item[data-match="${defId}"]`);
-                
-                if (termId === defId) {
-                    term.classList.add('correct');
-                    def.classList.add('correct');
-                } else {
-                    term.classList.add('incorrect');
-                    def.classList.add('incorrect');
-                }
-            });
-
-            if (score === data.length) alert("恭喜！所有匹配都正确！");
-        }
-
         // 重置游戏
         function resetGame() {
             clearInterval(timerInterval); // 清除倒计时
@@ -303,6 +295,7 @@
             });
             score = 0;
             document.getElementById('score').textContent = score;
+            document.getElementById('congratulations').style.display = 'none'; // 隐藏通关提示
             loadGame();
             startTimer(); // 重新开始倒计时
         }
@@ -318,7 +311,6 @@
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
                     alert("时间到！游戏结束！");
-                    checkAnswers(); // 时间到后自动检查答案
                 }
             }, 1000);
         }
