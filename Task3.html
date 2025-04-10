@@ -11,7 +11,7 @@
             --primary-color: #007bff;
             --hover-color: #0056b3;
             --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            --selected-color: #007bff; /* 选中时的蓝色 */
+            --selected-color: #007bff;
         }
 
         body {
@@ -45,8 +45,8 @@
         }
 
         .item.selected {
-            border: 2px solid var(--selected-color); /* 选中时变为蓝色 */
-            background-color: #e6f0ff; /* 浅蓝色背景 */
+            border: 2px solid var(--selected-color);
+            background-color: #e6f0ff;
         }
 
         .item.correct {
@@ -60,7 +60,7 @@
         }
 
         .item.hidden {
-            display: none; /* 匹配正确后隐藏 */
+            display: none;
         }
 
         .score {
@@ -85,22 +85,6 @@
             background: var(--hover-color);
         }
 
-        .matches {
-            margin-top: 20px;
-        }
-
-        .match-pair {
-            display: flex;
-            gap: 20px;
-            margin: 10px 0;
-            align-items: center;
-        }
-
-        .match-pair::after {
-            content: "⟶";
-            font-size: 1.5em;
-        }
-
         @media (max-width: 768px) {
             .container {
                 flex-direction: column;
@@ -119,7 +103,7 @@
             font-size: 2em;
             color: #28a745;
             margin-top: 20px;
-            display: none; /* 初始隐藏 */
+            display: none;
         }
     </style>
 </head>
@@ -136,8 +120,7 @@
         </div>
     </div>
     <button onclick="resetGame()">重置</button>
-    <div class="congratulations" id="congratulations">恭喜！通关成功！</div>
-    <div class="matches" id="matches"></div>
+    <div class="congratulations" id="congratulations"></div>
 
     <script>
         const data = [
@@ -151,10 +134,10 @@
         let matches = new Map();
         let score = 0;
         let selectedTerm = null;
-        let timeLeft = 60; // 倒计时时间（秒）
+        let timeLeft = 60;
         let timerInterval = null;
+        let attempts = 0; // 新增：尝试次数计数器
 
-        // 随机打乱数组
         function shuffle(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -162,11 +145,9 @@
             }
         }
 
-        // 确保术语和定义不在同一行
         function ensureNoSameRowMatch(terms, definitions) {
             for (let i = 0; i < terms.length; i++) {
                 if (terms[i].term === definitions[i].term) {
-                    // 如果同一行的术语和定义匹配，则交换定义的位置
                     const temp = definitions[i];
                     definitions[i] = definitions[(i + 1) % definitions.length];
                     definitions[(i + 1) % definitions.length] = temp;
@@ -174,21 +155,17 @@
             }
         }
 
-        // 加载游戏
         function loadGame() {
             const termsDiv = document.querySelector('.terms');
             const definitionsDiv = document.querySelector('.definitions');
             
-            // 打乱术语和定义的顺序
             const shuffledTerms = [...data];
             const shuffledDefinitions = [...data];
             shuffle(shuffledTerms);
             shuffle(shuffledDefinitions);
 
-            // 确保同一行的术语和定义不匹配
             ensureNoSameRowMatch(shuffledTerms, shuffledDefinitions);
 
-            // 加载术语
             termsDiv.innerHTML = '<h2>术语</h2>';
             shuffledTerms.forEach((item, index) => {
                 termsDiv.innerHTML += `
@@ -202,7 +179,6 @@
                 `;
             });
 
-            // 加载定义
             definitionsDiv.innerHTML = '<h2>定义</h2>';
             shuffledDefinitions.forEach((item, index) => {
                 definitionsDiv.innerHTML += `
@@ -217,90 +193,66 @@
             });
         }
 
-        // 处理术语点击
         function handleTermClick(term) {
             if (selectedTerm) selectedTerm.classList.remove('selected');
             selectedTerm = term;
             term.classList.add('selected');
         }
 
-        // 处理定义点击
         function handleDefClick(def) {
             if (!selectedTerm) return;
+            
+            attempts++; // 每次尝试匹配时增加计数
             
             const termId = selectedTerm.dataset.id;
             const defMatch = def.dataset.match;
 
-            // 移除已有的匹配
             matches.delete(termId);
             matches.forEach((value, key) => {
                 if (value === defMatch) matches.delete(key);
             });
 
             matches.set(termId, defMatch);
-            updateMatches();
             selectedTerm.classList.remove('selected');
             selectedTerm = null;
 
-            // 检查是否匹配正确
             checkMatch(termId, defMatch);
         }
 
-        // 检查匹配是否正确
         function checkMatch(termId, defMatch) {
             if (termId === defMatch) {
-                // 匹配正确，隐藏术语和定义
+                // 匹配正确，直接删除元素
                 const term = document.querySelector(`.terms .item[data-id="${termId}"]`);
                 const def = document.querySelector(`.definitions .item[data-match="${defMatch}"]`);
-                term.classList.add('hidden');
-                def.classList.add('hidden');
+                term.remove();
+                def.remove();
                 score++;
                 document.getElementById('score').textContent = score;
 
-                // 检查是否所有选项都已匹配
                 if (score === data.length) {
-                    document.getElementById('congratulations').style.display = 'block'; // 显示通关提示
-                    clearInterval(timerInterval); // 停止倒计时
+                    document.getElementById('congratulations').innerHTML = `
+                        恭喜！通关成功！<br>
+                        您共尝试了 ${attempts} 次
+                    `;
+                    document.getElementById('congratulations').style.display = 'block';
+                    clearInterval(timerInterval);
                 }
             }
         }
 
-        // 更新匹配显示
-        function updateMatches() {
-            const matchesDiv = document.getElementById('matches');
-            matchesDiv.innerHTML = '';
-            matches.forEach((defId, termId) => {
-                const term = document.querySelector(`.terms .item[data-id="${termId}"]`);
-                const def = document.querySelector(`.definitions .item[data-match="${defId}"]`);
-                if (term && def) {
-                    matchesDiv.innerHTML += `
-                        <div class="match-pair">
-                            <div>${term.textContent}</div>
-                            <div>${def.textContent}</div>
-                        </div>
-                    `;
-                }
-            });
-        }
-
-        // 重置游戏
         function resetGame() {
-            clearInterval(timerInterval); // 清除倒计时
-            timeLeft = 60; // 重置时间
-            document.getElementById('time').textContent = "01:00"; // 重置显示时间
+            clearInterval(timerInterval);
+            timeLeft = 60;
+            document.getElementById('time').textContent = "01:00";
             matches.clear();
-            document.getElementById('matches').innerHTML = '';
-            document.querySelectorAll('.item').forEach(item => {
-                item.classList.remove('correct', 'incorrect', 'selected', 'hidden');
-            });
             score = 0;
+            attempts = 0; // 重置尝试次数
             document.getElementById('score').textContent = score;
-            document.getElementById('congratulations').style.display = 'none'; // 隐藏通关提示
+            document.getElementById('congratulations').style.display = 'none';
             loadGame();
-            startTimer(); // 重新开始倒计时
+            startTimer();
         }
 
-        // 开始倒计时
         function startTimer() {
             timerInterval = setInterval(() => {
                 timeLeft--;
@@ -315,9 +267,8 @@
             }, 1000);
         }
 
-        // 初始化游戏
         loadGame();
-        startTimer(); // 启动倒计时
+        startTimer();
     </script>
 </body>
 </html>
