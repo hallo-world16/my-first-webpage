@@ -262,17 +262,23 @@
                             点击"下一页"继续
                         `;
                         document.getElementById('congratulations').style.display = 'block';
-                        clearInterval(timerInterval);
                     } else {
                         document.getElementById('congratulations').innerHTML = `
                             恭喜！通关成功！<br>
-                            您共尝试了 ${attempts} 次
+                            您共尝试了 ${attempts} 次<br>
+                            用时: ${formatTime(60 - timeLeft)}
                         `;
                         document.getElementById('congratulations').style.display = 'block';
                         clearInterval(timerInterval);
                     }
                 }
             }
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}分${secs}秒`;
         }
 
         function loadNextPage() {
@@ -282,10 +288,7 @@
             document.getElementById('score').textContent = score;
             document.getElementById('nextPage').style.display = 'none';
             document.getElementById('congratulations').style.display = 'none';
-            timeLeft = 60;
-            document.getElementById('time').textContent = "01:00";
             loadGame();
-            startTimer();
         }
 
         function resetGame() {
