@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -105,6 +105,18 @@
             margin-top: 20px;
             display: none;
         }
+
+        .next-page {
+            display: none;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 1em;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -120,10 +132,12 @@
         </div>
     </div>
     <button onclick="resetGame()">重置</button>
+    <button class="next-page" id="nextPage" onclick="loadNextPage()">下一页</button>
     <div class="congratulations" id="congratulations"></div>
 
     <script>
-        const data = [
+        // 第一页数据
+        const page1Data = [
             { term: "军事安全", definition: "军事是国家安全的基础保障。通过设立常备军队，国家具备威慑和抵抗外来军事势力入侵的能力，并能在第一时间进行反击。" },
             { term: "政治安全", definition: "通常指稳定的社会秩序以及政府与人民之间的契约（如法律）不会因政党轮替或领导人更换而被轻易推翻。" },
             { term: "经济安全", definition: "对内，维持国家内部各经济部门和元素的正常运转，保障公平有序的交易和投资环境；对外，通过两国之间的投资保障协定，确保国际经济合作的安全与稳定。" },
@@ -131,12 +145,23 @@
             { term: "文化安全", definition: "文化安全指一个文化处于没有危险和不受内外威胁的状态，以及保障持续安全状态的能力。" }
         ];
 
+        // 第二页数据
+        const page2Data = [
+            { term: "统筹外部安全和内部安全", definition: "总体国家安全观明确要求对内求发展、求变革、求稳定、建设平安中国，对外求和平、求合作、求共赢、建设和谐世界。" },
+            { term: "统筹国土安全和国民安全", definition: "坚持以民为本、以人为本，坚持国家安全一切为了人民、一切依靠人民，真正夯实国家安全的群众基础，进一步证实了国民安全、人民安全是总体国家安全观的第一要义与核心价值。" },
+            { term: "统筹传统安全和非传统安全", definition: "传统安全与非传统安全问题相互交织，增加了安全问题的多样性、复杂性和联动性。" },
+            { term: "统筹自身安全和共同安全", definition: "国家主张摒弃零和博弈和以邻为壑的陈旧思维，树立命运与共的理念意识，在国际上高举人类命运共同体旗帜，坚定不移走和平发展道路，维护国际共同安全。" },
+            { term: "统筹维护和塑造国家安全", definition: "推进国家安全体系和能力现代化，要准确把握当今世界发展大势和时代发展潮流，在变局中把握规律、在乱局中趋利避害、在斗争中争取主动，不断塑造总体有利的国家安全战略态势，把维护国家安全的战略主动权牢牢掌握在自己手中。" }
+        ];
+
+        let currentPage = 1;
+        let currentData = page1Data;
         let matches = new Map();
         let score = 0;
         let selectedTerm = null;
         let timeLeft = 60;
         let timerInterval = null;
-        let attempts = 0; // 新增：尝试次数计数器
+        let attempts = 0;
 
         function shuffle(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -159,8 +184,8 @@
             const termsDiv = document.querySelector('.terms');
             const definitionsDiv = document.querySelector('.definitions');
             
-            const shuffledTerms = [...data];
-            const shuffledDefinitions = [...data];
+            const shuffledTerms = [...currentData];
+            const shuffledDefinitions = [...currentData];
             shuffle(shuffledTerms);
             shuffle(shuffledDefinitions);
 
@@ -202,7 +227,7 @@
         function handleDefClick(def) {
             if (!selectedTerm) return;
             
-            attempts++; // 每次尝试匹配时增加计数
+            attempts++;
             
             const termId = selectedTerm.dataset.id;
             const defMatch = def.dataset.match;
@@ -221,7 +246,6 @@
 
         function checkMatch(termId, defMatch) {
             if (termId === defMatch) {
-                // 匹配正确，直接删除元素
                 const term = document.querySelector(`.terms .item[data-id="${termId}"]`);
                 const def = document.querySelector(`.definitions .item[data-match="${defMatch}"]`);
                 term.remove();
@@ -229,26 +253,53 @@
                 score++;
                 document.getElementById('score').textContent = score;
 
-                if (score === data.length) {
-                    document.getElementById('congratulations').innerHTML = `
-                        恭喜！通关成功！<br>
-                        您共尝试了 ${attempts} 次
-                    `;
-                    document.getElementById('congratulations').style.display = 'block';
-                    clearInterval(timerInterval);
+                if (score === currentData.length) {
+                    if (currentPage === 1) {
+                        document.getElementById('nextPage').style.display = 'block';
+                        document.getElementById('congratulations').innerHTML = `
+                            恭喜！完成第 ${currentPage} 页！<br>
+                            您共尝试了 ${attempts} 次<br>
+                            点击"下一页"继续
+                        `;
+                        document.getElementById('congratulations').style.display = 'block';
+                        clearInterval(timerInterval);
+                    } else {
+                        document.getElementById('congratulations').innerHTML = `
+                            恭喜！通关成功！<br>
+                            您共尝试了 ${attempts} 次
+                        `;
+                        document.getElementById('congratulations').style.display = 'block';
+                        clearInterval(timerInterval);
+                    }
                 }
             }
         }
 
+        function loadNextPage() {
+            currentPage = 2;
+            currentData = page2Data;
+            score = 0;
+            document.getElementById('score').textContent = score;
+            document.getElementById('nextPage').style.display = 'none';
+            document.getElementById('congratulations').style.display = 'none';
+            timeLeft = 60;
+            document.getElementById('time').textContent = "01:00";
+            loadGame();
+            startTimer();
+        }
+
         function resetGame() {
+            currentPage = 1;
+            currentData = page1Data;
             clearInterval(timerInterval);
             timeLeft = 60;
             document.getElementById('time').textContent = "01:00";
             matches.clear();
             score = 0;
-            attempts = 0; // 重置尝试次数
+            attempts = 0;
             document.getElementById('score').textContent = score;
             document.getElementById('congratulations').style.display = 'none';
+            document.getElementById('nextPage').style.display = 'none';
             loadGame();
             startTimer();
         }
