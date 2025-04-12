@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>国家安全匹配游戏</title>
+    <title>國家安全匹配遊戲</title>
     <style>
         :root {
             --correct-color: #d4edda;
@@ -120,38 +120,38 @@
     </style>
 </head>
 <body>
-    <h1>国家安全匹配游戏</h1>
+    <h1>國家安全匹配遊戲</h1>
     <div class="score">得分: <span id="score">0</span> / 5</div>
-    <div class="timer">剩余时间: <span id="time">01:00</span></div>
+    <div class="timer">剩餘時間: <span id="time">01:00</span></div>
     <div class="container">
         <div class="terms">
-            <h2>术语</h2>
+            <h2>術語</h2>
         </div>
         <div class="definitions">
-            <h2>定义</h2>
+            <h2>定義</h2>
         </div>
     </div>
     <button onclick="resetGame()">重置</button>
-    <button class="next-page" id="nextPage" onclick="loadNextPage()">下一页</button>
+    <button class="next-page" id="nextPage" onclick="loadNextPage()">下一頁</button>
     <div class="congratulations" id="congratulations"></div>
 
     <script>
-        // 第一页数据
+        // 第一頁數據
         const page1Data = [
-            { term: "军事安全", definition: "军事是国家安全的基础保障。通过设立常备军队，国家具备威慑和抵抗外来军事势力入侵的能力，并能在第一时间进行反击。" },
-            { term: "政治安全", definition: "通常指稳定的社会秩序以及政府与人民之间的契约（如法律）不会因政党轮替或领导人更换而被轻易推翻。" },
-            { term: "经济安全", definition: "对内，维持国家内部各经济部门和元素的正常运转，保障公平有序的交易和投资环境；对外，通过两国之间的投资保障协定，确保国际经济合作的安全与稳定。" },
-            { term: "资源安全", definition: "为了国家的永续发展，国家应以公共储备的角色介入各类能源、粮食、矿产、水资源等的安全存量管理与物价调节。" },
-            { term: "文化安全", definition: "文化安全指一个文化处于没有危险和不受内外威胁的状态，以及保障持续安全状态的能力。" }
+            { term: "軍事安全", definition: "軍事是國家安全的基礎保障。通過設立常備軍隊，國家具備威懾和抵抗外來軍事勢力入侵的能力，並能在第一時間進行反擊。" },
+            { term: "政治安全", definition: "通常指穩定的社會秩序以及政府與人民之間的契約（如法律）不會因政黨輪替或領導人更換而被輕易推翻。" },
+            { term: "經濟安全", definition: "對內，維持國家內部各經濟部門和元素的正常運轉，保障公平有序的交易和投資環境；對外，通過兩國之間的投資保障協定，確保國際經濟合作的安全與穩定。" },
+            { term: "資源安全", definition: "為了國家的永續發展，國家應以公共儲備的角色介入各類能源、糧食、礦產、水資源等的安全存量管理與物價調節。" },
+            { term: "文化安全", definition: "文化安全指一個文化處於沒有危險和不受內外威脅的狀態，以及保障持續安全狀態的能力。" }
         ];
 
-        // 第二页数据
+        // 第二頁數據
         const page2Data = [
-            { term: "统筹外部安全和内部安全", definition: "总体国家安全观明确要求对内求发展、求变革、求稳定、建设平安中国，对外求和平、求合作、求共赢、建设和谐世界。" },
-            { term: "统筹国土安全和国民安全", definition: "坚持以民为本、以人为本，坚持国家安全一切为了人民、一切依靠人民，真正夯实国家安全的群众基础，进一步证实了国民安全、人民安全是总体国家安全观的第一要义与核心价值。" },
-            { term: "统筹传统安全和非传统安全", definition: "传统安全与非传统安全问题相互交织，增加了安全问题的多样性、复杂性和联动性。" },
-            { term: "统筹自身安全和共同安全", definition: "国家主张摒弃零和博弈和以邻为壑的陈旧思维，树立命运与共的理念意识，在国际上高举人类命运共同体旗帜，坚定不移走和平发展道路，维护国际共同安全。" },
-            { term: "统筹维护和塑造国家安全", definition: "推进国家安全体系和能力现代化，要准确把握当今世界发展大势和时代发展潮流，在变局中把握规律、在乱局中趋利避害、在斗争中争取主动，不断塑造总体有利的国家安全战略态势，把维护国家安全的战略主动权牢牢掌握在自己手中。" }
+            { term: "統籌外部安全和內部安全", definition: "總體國家安全觀明確要求對內求發展、求變革、求穩定、建設平安中國，對外求和平、求合作、求共贏、建設和諧世界。" },
+            { term: "統籌國土安全和國民安全", definition: "堅持以民為本、以人為本，堅持國家安全一切為了人民、一切依靠人民，真正夯實國家安全的群眾基礎，進一步證實了國民安全、人民安全是總體國家安全觀的第一要義與核心價值。" },
+            { term: "統籌傳統安全和非傳統安全", definition: "傳統安全與非傳統安全問題相互交織，增加了安全問題的多樣性、複雜性和聯動性。" },
+            { term: "統籌自身安全和共同安全", definition: "國家主張摒棄零和博弈和以鄰為壑的陳舊思維，樹立命運與共的理念意識，在國際上高舉人類命運共同體旗幟，堅定不移走和平發展道路，維護國際共同安全。" },
+            { term: "統籌維護和塑造國家安全", definition: "推進國家安全體系和能力現代化，要準確把握當今世界發展大勢和時代發展潮流，在變局中把握規律、在亂局中趨利避害、在鬥爭中爭取主動，不斷塑造總體有利的國家安全戰略態勢，把維護國家安全的戰略主動權牢牢掌握在自己手中。" }
         ];
 
         let currentPage = 1;
@@ -191,26 +191,26 @@
 
             ensureNoSameRowMatch(shuffledTerms, shuffledDefinitions);
 
-            termsDiv.innerHTML = '<h2>术语</h2>';
+            termsDiv.innerHTML = '<h2>術語</h2>';
             shuffledTerms.forEach((item, index) => {
                 termsDiv.innerHTML += `
                     <div class="item" 
                         data-id="${index + 1}" 
                         tabindex="0"
-                        aria-label="术语: ${item.term}"
+                        aria-label="術語: ${item.term}"
                         onclick="handleTermClick(this)">
                         ${item.term}
                     </div>
                 `;
             });
 
-            definitionsDiv.innerHTML = '<h2>定义</h2>';
+            definitionsDiv.innerHTML = '<h2>定義</h2>';
             shuffledDefinitions.forEach((item, index) => {
                 definitionsDiv.innerHTML += `
                     <div class="item" 
                         data-match="${index + 1}"
                         tabindex="0"
-                        aria-label="定义: ${item.definition}"
+                        aria-label="定義: ${item.definition}"
                         onclick="handleDefClick(this)">
                         ${item.definition}
                     </div>
@@ -257,16 +257,16 @@
                     if (currentPage === 1) {
                         document.getElementById('nextPage').style.display = 'block';
                         document.getElementById('congratulations').innerHTML = `
-                            恭喜！完成第 ${currentPage} 页！<br>
-                            您共尝试了 ${attempts} 次<br>
-                            点击"下一页"继续
+                            恭喜！完成第 ${currentPage} 頁！<br>
+                            您共嘗試了 ${attempts} 次<br>
+                            點擊"下一頁"繼續
                         `;
                         document.getElementById('congratulations').style.display = 'block';
                     } else {
                         document.getElementById('congratulations').innerHTML = `
-                            恭喜！通关成功！<br>
-                            您共尝试了 ${attempts} 次<br>
-                            用时: ${formatTime(60 - timeLeft)}
+                            恭喜！通關成功！<br>
+                            您共嘗試了 ${attempts} 次<br>
+                            用時: ${formatTime(60 - timeLeft)}
                         `;
                         document.getElementById('congratulations').style.display = 'block';
                         clearInterval(timerInterval);
@@ -316,7 +316,7 @@
 
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
-                    alert("时间到！游戏结束！");
+                    alert("時間到！遊戲結束！");
                 }
             }, 1000);
         }
