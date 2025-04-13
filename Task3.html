@@ -130,6 +130,13 @@
             box-sizing: border-box;
         }
 
+        .error-message {
+            color: #dc3545;
+            font-size: 0.8em;
+            margin-top: 5px;
+            display: none;
+        }
+
         .start-btn {
             width: 100%;
             padding: 10px;
@@ -153,6 +160,14 @@
             text-align: center;
             margin-bottom: 20px;
             font-size: 1.2em;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+
+        .hidden {
+            display: none;
         }
     </style>
 </head>
@@ -160,18 +175,21 @@
     <div class="login-form" id="loginForm">
         <h2>請輸入學生信息</h2>
         <div class="form-group">
-            <label for="class">班別 (1-6, A-D):</label>
-            <input type="text" id="class" pattern="[1-6A-Da-d]" title="請輸入1-6或A-D" required>
+            <label for="class">班別 (格式如1A、2B、3C等):</label>
+            <input type="text" id="class" pattern="[1-6][A-Da-d]" title="請輸入1-6加A-D的組合，如1A、2B等" required>
+            <div class="error-message" id="classError">請輸入有效的班別 (格式如1A、2B、3C等)</div>
         </div>
         <div class="form-group">
             <label for="studentId">學號 (1-40):</label>
             <input type="number" id="studentId" min="1" max="40" required>
+            <div class="error-message" id="studentIdError">請輸入有效的學號 (1-40)</div>
         </div>
         <div class="form-group">
             <label for="name">姓名:</label>
             <input type="text" id="name" required>
+            <div class="error-message" id="nameError">請輸入姓名</div>
         </div>
-        <button class="start-btn" onclick="startGame()">開始遊戲</button>
+        <button class="start-btn" id="startBtn">開始遊戲</button>
     </div>
 
     <div class="game-content" id="gameContent">
@@ -222,32 +240,84 @@
         let attempts = 0;
         let userInfo = {};
 
+        // 初始化事件監聽
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('startBtn').addEventListener('click', startGame);
+            
+            // 為輸入框添加實時驗證
+            document.getElementById('class').addEventListener('input', validateClass);
+            document.getElementById('studentId').addEventListener('input', validateStudentId);
+            document.getElementById('name').addEventListener('input', validateName);
+        });
+
+        function validateClass() {
+            const classInput = document.getElementById('class');
+            const errorElement = document.getElementById('classError');
+            // 驗證格式為1-6加A-D（如1A、2B、3C等）
+            const isValid = /^[1-6][A-Da-d]$/i.test(classInput.value);
+            
+            if (!isValid && classInput.value !== '') {
+                errorElement.style.display = 'block';
+                return false;
+            } else {
+                errorElement.style.display = 'none';
+                return true;
+            }
+        }
+
+        function validateStudentId() {
+            const studentIdInput = document.getElementById('studentId');
+            const errorElement = document.getElementById('studentIdError');
+            const value = parseInt(studentIdInput.value);
+            const isValid = !isNaN(value) && value >= 1 && value <= 40;
+            
+            if (!isValid && studentIdInput.value !== '') {
+                errorElement.style.display = 'block';
+                return false;
+            } else {
+                errorElement.style.display = 'none';
+                return true;
+            }
+        }
+
+        function validateName() {
+            const nameInput = document.getElementById('name');
+            const errorElement = document.getElementById('nameError');
+            const isValid = nameInput.value.trim() !== '';
+            
+            if (!isValid && nameInput.value !== '') {
+                errorElement.style.display = 'block';
+                return false;
+            } else {
+                errorElement.style.display = 'none';
+                return true;
+            }
+        }
+
+        function validateAll() {
+            const isClassValid = validateClass();
+            const isStudentIdValid = validateStudentId();
+            const isNameValid = validateName();
+            
+            return isClassValid && isStudentIdValid && isNameValid;
+        }
+
         function startGame() {
+            // 驗證所有輸入
+            if (!validateAll()) {
+                alert('請檢查您的輸入，確保所有欄位都符合要求');
+                return;
+            }
+
             const classInput = document.getElementById('class').value.toUpperCase();
             const studentId = document.getElementById('studentId').value;
-            const name = document.getElementById('name').value;
-
-            // 驗證輸入
-            if (!/^[1-6A-D]$/.test(classInput)) {
-                alert('請輸入有效的班別 (1-6 或 A-D)');
-                return;
-            }
-
-            if (studentId < 1 || studentId > 40) {
-                alert('請輸入有效的學號 (1-40)');
-                return;
-            }
-
-            if (!name.trim()) {
-                alert('請輸入姓名');
-                return;
-            }
+            const name = document.getElementById('name').value.trim();
 
             // 保存用戶信息
             userInfo = {
                 class: classInput,
                 studentId: studentId,
-                name: name.trim()
+                name: name
             };
 
             // 顯示用戶信息
@@ -352,6 +422,7 @@
                         document.getElementById('nextPage').style.display = 'block';
                         document.getElementById('congratulations').innerHTML = `
                             恭喜！完成第 ${currentPage} 頁！<br>
+                            班別: ${userInfo.class} 學號: ${userInfo.studentId} 姓名: ${userInfo.name}<br>
                             您共嘗試了 ${attempts} 次<br>
                             點擊"下一頁"繼續
                         `;
@@ -387,6 +458,7 @@
             document.getElementById('congratulations').style.display = 'none';
             timeLeft = 60;
             document.getElementById('time').textContent = "01:00";
+            attempts = 0;
             loadGame();
             startTimer();
         }
