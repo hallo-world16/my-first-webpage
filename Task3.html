@@ -452,16 +452,14 @@
         }
 
         function loadNextPage() {
-            currentPage = 2;
-            currentData = page2Data;
-            document.getElementById('nextPage').style.display = 'none';
-            document.getElementById('congratulations').style.display = 'none';
-            timeLeft = 60;
-            document.getElementById('time').textContent = "01:00";
-            attempts = 0;
-            loadGame();
-            startTimer();
-        }
+    currentPage = 2;
+    currentData = page2Data;
+    document.getElementById('nextPage').style.display = 'none';
+    document.getElementById('congratulations').style.display = 'none';
+    attempts = 0;
+    loadGame();
+    // 不再重置时间，继续使用当前剩余时间
+}
 
         function resetGame() {
             currentPage = 1;
