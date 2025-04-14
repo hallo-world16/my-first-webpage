@@ -452,26 +452,28 @@
         }
 
         function loadNextPage() {
-    currentPage = 2;
-    currentData = page2Data;
-    document.getElementById('nextPage').style.display = 'none';
-    document.getElementById('congratulations').style.display = 'none';
-    attempts = 0;
-    loadGame();
-    // 不再重置时间，继续使用当前剩余时间
-}
+            currentPage = 2;
+            currentData = page2Data;
+            document.getElementById('nextPage').style.display = 'none';
+            document.getElementById('congratulations').style.display = 'none';
+            attempts = 0;
+            loadGame();
+            // 不再重置時間，繼續使用當前剩餘時間
+        }
 
         function resetGame() {
+            clearInterval(timerInterval);
+            // 返回登錄畫面
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('gameContent').style.display = 'none';
+            // 重置遊戲狀態
             currentPage = 1;
             currentData = page1Data;
-            clearInterval(timerInterval);
             timeLeft = 60;
             document.getElementById('time').textContent = "01:00";
             attempts = 0;
             document.getElementById('congratulations').style.display = 'none';
             document.getElementById('nextPage').style.display = 'none';
-            loadGame();
-            startTimer();
         }
 
         function startTimer() {
@@ -485,6 +487,7 @@
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
                     alert("時間到！遊戲結束！");
+                    resetGame(); // 時間到時返回登錄畫面
                 }
             }, 1000);
         }
